@@ -1,14 +1,10 @@
-import datetime as dt
-
-from posts.models import Comment, Follow, Group, Post
-from rest_framework import permissions, viewsets
+from rest_framework import filters, permissions, viewsets
+from rest_framework.pagination import LimitOffsetPagination
 
 from .permissions import PermissionReadOrCreate
-from .serializers import (
-    CommentSerializer, FollowSerializer, GroupSerializer, PostSerializer
-)
-from rest_framework.pagination import LimitOffsetPagination
-from rest_framework import filters
+from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
+                          PostSerializer)
+from posts.models import Comment, Follow, Group, Post
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -18,7 +14,7 @@ class PostViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user, pub_date=dt.date.today())
+        serializer.save(author=self.request.user)
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
@@ -43,7 +39,6 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(
             author=self.request.user,
-            created=dt.datetime.now(),
             post_id=self.get_post_id()
         )
 
