@@ -1,4 +1,4 @@
-from rest_framework import filters, permissions, viewsets
+from rest_framework import filters, mixins, permissions, viewsets
 from rest_framework.pagination import LimitOffsetPagination
 
 from .permissions import PermissionReadOrCreate
@@ -27,8 +27,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = (PermissionReadOrCreate, )
 
     def get_post_id(self):
-        post_id = self.kwargs.get('post_id')
-        return post_id
+        return self.kwargs.get('post_id')
 
     def get_queryset(self):
         permission_queryset = Comment.objects.filter(
@@ -43,7 +42,11 @@ class CommentViewSet(viewsets.ModelViewSet):
         )
 
 
-class FollowViewSet(viewsets.ModelViewSet):
+class FollowViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    viewsets.GenericViewSet
+):
     serializer_class = FollowSerializer
     permission_classes = (permissions.IsAuthenticated, )
     filter_backends = (filters.SearchFilter, )

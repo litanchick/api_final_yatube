@@ -27,7 +27,6 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'author', 'created', 'post')
         read_only_fields = ('created', 'post')
         model = Comment
-        # (?P<slug>^[-a-zA-Z0-9_]+$)
 
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -47,12 +46,6 @@ class FollowSerializer(serializers.ModelSerializer):
         queryset=User.objects.all()
     )
 
-    def validate(self, data):
-        if self.context['request'].user == data['following']:
-            raise serializers.ValidationError(
-                'Вы не можете подписаться на себя.')
-        return data
-
     class Meta:
         fields = '__all__'
         model = Follow
@@ -64,3 +57,9 @@ class FollowSerializer(serializers.ModelSerializer):
                 message='Вы уже подписаны на этого пользователя.'
             )
         ]
+
+    def validate(self, data):
+        if self.context['request'].user == data['following']:
+            raise serializers.ValidationError(
+                'Вы не можете подписаться на себя.')
+        return data
